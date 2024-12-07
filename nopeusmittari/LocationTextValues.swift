@@ -1,31 +1,22 @@
 import SwiftUI
 import CoreLocation
 
-struct SpeedView<GpsViewModel>: View where GpsViewModel: GpsModel {
+struct SpeedView: View {
     @ObservedObject
     var gpsModel: GpsViewModel
     
     var body: some View {
-        let sp = switch gpsModel.stationary {
-        case true:
-            "0"
-        case _ where gpsModel.hasAccurateLocation && gpsModel.speed >= 0:
-            String(format: "%.0f", 3.6 * gpsModel.speed)
-        default:
-            " ? "
-        }
-        
         HStack {
-            Text(sp)
+            Text(gpsModel.speed)
                 .font(.system(size: 120, weight: .bold))
                 .padding(.trailing, 10)
-            Text("km/h")
+            Text(gpsModel.speedUnit.label)
                 .font(.system(size: 24, weight: .bold))
         }
     }
 }
 
-struct CourseView<GpsViewModel>: View where GpsViewModel: GpsModel {
+struct CourseView: View {
     @ObservedObject
     var gpsModel: GpsViewModel
     
@@ -36,19 +27,19 @@ struct CourseView<GpsViewModel>: View where GpsViewModel: GpsModel {
     }
 }
 
-struct CoordinatesView<GpsViewModel>: View where GpsViewModel: GpsModel {
+struct CoordinatesView: View {
     @ObservedObject
     var gpsModel: GpsViewModel
     
     var body: some View {
         VStack {
-            Text(String(format: "Latitude: %.3f°", gpsModel.latitude))
-            Text(String(format: "Longitude: %.3f°", gpsModel.longitude))
+            Text(String(format: "Latitude: %@", gpsModel.latitude))
+            Text(String(format: "Longitude: %@", gpsModel.longitude))
         }
     }
 }
 
-struct AccuracyView<GpsViewModel>: View where GpsViewModel: GpsModel {
+struct AccuracyView: View {
     @ObservedObject
     var gpsModel: GpsViewModel
     
@@ -58,7 +49,7 @@ struct AccuracyView<GpsViewModel>: View where GpsViewModel: GpsModel {
             Text("Low position accuracy")
         case _ where !gpsModel.hasAccurateLocation || gpsModel.horizontalAccuracy > kCLLocationAccuracyKilometer:
             Text(String(format: "Accuracy %.0f m (very low)", gpsModel.horizontalAccuracy))
-         default:
+        default:
             Text(String(format: "Accuracy %.0f m", gpsModel.horizontalAccuracy))
         }
     }
@@ -66,6 +57,6 @@ struct AccuracyView<GpsViewModel>: View where GpsViewModel: GpsModel {
 
 #Preview {
     VStack {
-        SpeedView(gpsModel: FixedGpsModel())
+        SpeedView(gpsModel: testViewModel(FixedGpsModel()))
     }
 }

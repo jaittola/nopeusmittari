@@ -2,13 +2,14 @@ import SwiftUI
 
 @main
 struct nopeusmittariApp: App {
-    var gpsModel = GpsModelImpl()
+    var gpsReceiver = GpsReceiverImpl()
+    var gpsViewModel = GpsViewModel()
     
     var body: some Scene {
         WindowGroup {
-            ContentView(gpsModel: gpsModel)
-                .onAppear(perform: { gpsModel.start() })
-                .onDisappear(perform: { gpsModel.stop() })
+            ContentView(gpsModel: gpsViewModel)
+                .onAppear(perform: { gpsReceiver.start(gpsViewModel) })
+                .onDisappear(perform: { gpsReceiver.stop() })
         }
     }
 }

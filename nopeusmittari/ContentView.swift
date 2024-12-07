@@ -1,7 +1,7 @@
 
 import SwiftUI
 
-struct ContentView<GpsViewModel>: View where GpsViewModel: GpsModel {
+struct ContentView: View {
 
     @ObservedObject
     var gpsModel: GpsViewModel
@@ -29,5 +29,7 @@ struct ContentView<GpsViewModel>: View where GpsViewModel: GpsModel {
 }
 
 #Preview {
-    ContentView(gpsModel: FixedPoorLocationAccuracy())
+    
+    
+    ContentView(gpsModel: testViewModel(FixedPoorLocationAccuracy()))
 }
