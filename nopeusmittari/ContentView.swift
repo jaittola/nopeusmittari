@@ -20,6 +20,7 @@ struct ContentView: View {
                 AccuracyView(gpsModel: gpsModel)
                 SpeedView(gpsModel: gpsModel)
                 CourseView(gpsModel: gpsModel)
+                    .padding(.bottom, 30)
                 CoordinatesView(gpsModel: gpsModel)
             }
         }
