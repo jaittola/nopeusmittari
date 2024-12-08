@@ -55,6 +55,17 @@ class GpsViewModel: ObservableObject {
         updateSpeed(newSpeed: 0, hasAccurateLocation: false, isStationary: false)
     }
     
+    @MainActor
+    func toggleLocationUpdating() {
+        let gpsReceiver = GpsReceiverImpl.shared
+        
+        if gpsReceiver.updatesStarted {
+            gpsReceiver.stop()
+        } else {
+            gpsReceiver.start(self)
+        }
+    }
+    
     private func updateSpeed(newSpeed: Double,
                              hasAccurateLocation: Bool,
                              isStationary: Bool) {

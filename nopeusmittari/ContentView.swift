@@ -5,8 +5,10 @@ struct ContentView: View {
 
     @ObservedObject
     var gpsModel: GpsViewModel
-    
+        
     var body: some View {
+        let toggleButtonText = "Toggle updating"
+
         VStack {
             if !gpsModel.locationAvailable {
                 Image(systemName: "location.slash.fill")
@@ -23,6 +25,9 @@ struct ContentView: View {
                     .padding(.bottom, 30)
                 CoordinatesView(gpsModel: gpsModel)
             }
+            Button(toggleButtonText) {
+                gpsModel.toggleLocationUpdating()
+            }.padding(.vertical, 20)
         }
         .padding()
         Spacer()
@@ -30,7 +35,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    
-    
     ContentView(gpsModel: testViewModel(FixedPoorLocationAccuracy()))
 }

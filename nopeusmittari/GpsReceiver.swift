@@ -13,14 +13,16 @@ class GpsReceiverImpl: GpsReceiver {
     private var background: CLBackgroundActivitySession?
     
     private var updater: Task<Void, Never>?
-    
+        
     private init() {
         manager = CLLocationManager()
     }
     
     @Published
     var updatesStarted: Bool = UserDefaults.standard.bool(forKey: "liveUpdatesStarted") {
-        didSet { UserDefaults.standard.set(updatesStarted, forKey: "liveUpdatesStarted") }
+        didSet { UserDefaults.standard.set(updatesStarted, forKey: "liveUpdatesStarted")
+            NSLog("updates started \(updatesStarted)")
+        }
     }
     
     @Published
