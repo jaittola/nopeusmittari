@@ -8,7 +8,8 @@ struct SpeedView: View {
     var body: some View {
         HStack {
             Text(gpsModel.speed)
-                .font(.system(size: 120, weight: .bold))
+                .font(.system(size: 120, weight: .bold)
+                    .monospacedDigit())
                 .padding(.trailing, 10)
             Text(gpsModel.speedUnit.label)
                 .font(.system(size: 24, weight: .bold))
@@ -24,6 +25,7 @@ struct CourseView: View {
         let course = gpsModel.course >= 0 ? String(format: "%.0f°", gpsModel.course) : "-"
         
         Text(String(format: "Course: %@", course))
+            .font(.body).monospacedDigit()
     }
 }
 
@@ -34,7 +36,9 @@ struct CoordinatesView: View {
     var body: some View {
         VStack {
             Text(String(format: "Latitude: %@", gpsModel.latitude))
+                .font(.body).monospacedDigit()
             Text(String(format: "Longitude: %@", gpsModel.longitude))
+                .font(.body).monospacedDigit()
         }
     }
 }
