@@ -8,7 +8,31 @@ protocol GpsReceiver: ObservableObject {
 }
 
 class GpsReceiverImpl: GpsReceiver {
+    static let shared = GpsReceiverImpl()  // Create a single, shared instance of the object.
+    private let manager: CLLocationManager
+    private var background: CLBackgroundActivitySession?
+    
     private var updater: Task<Void, Never>?
+    
+    private init() {
+        manager = CLLocationManager()
+    }
+    
+    @Published
+    var updatesStarted: Bool = UserDefaults.standard.bool(forKey: "liveUpdatesStarted") {
+        didSet { UserDefaults.standard.set(updatesStarted, forKey: "liveUpdatesStarted") }
+    }
+    
+    @Published
+    var backgroundActivity: Bool = UserDefaults.standard.bool(forKey: "BGActivitySessionStarted") {
+        didSet {
+            NSLog("Background activity \(backgroundActivity)")
+            backgroundActivity ?
+            self.background = CLBackgroundActivitySession() :
+            self.background?.invalidate()
+            UserDefaults.standard.set(backgroundActivity, forKey: "BGActivitySessionStarted")
+        }
+    }
     
     func start(_ viewModel: GpsViewModel) {
         NSLog("GpsModelImpl: start")
@@ -17,16 +41,18 @@ class GpsReceiverImpl: GpsReceiver {
             NSLog("GpsModelImpl: start: apparently updater is already running")
             return
         }
-            
+        
         self.updater = Task {
             NSLog("Starting updater")
             let stream = CLLocationUpdate.liveUpdates(.otherNavigation)
+            updatesStarted = true
             
             do {
                 for try await update in stream {
                     guard !Task.isCancelled else {
                         NSLog("Task was cancelled, stopping")
                         self.updater = nil
+                        self.updatesStarted = false
                         viewModel.updateWithNoLocation()
                         return
                     }
@@ -38,6 +64,7 @@ class GpsReceiverImpl: GpsReceiver {
                     }
                     
                     if let location = update.location {
+                        NSLog("Location updated, \(update.location)")
                         viewModel.update(with: location,
                                          isAccuracyLimited: update.accuracyLimited,
                                          isStationary: update.stationary)
@@ -47,6 +74,7 @@ class GpsReceiverImpl: GpsReceiver {
                 }
             } catch {
                 NSLog("Getting location updates failed: \(error)")
+                self.updatesStarted = false
                 self.updater = nil
                 return
             }
@@ -58,6 +86,7 @@ class GpsReceiverImpl: GpsReceiver {
         
         self.updater?.cancel()
         self.updater = nil
+        self.updatesStarted = false
     }
 }
 
@@ -111,7 +140,7 @@ class FixedPoorLocationAccuracy: GpsReceiver {
         viewModel.update(with: location,
                          isAccuracyLimited: true,
                          isStationary: false)
-
+        
     }
     
     func stop() {

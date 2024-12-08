@@ -6,13 +6,31 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4F26F5E22D056CC100AA3362 /* NopeusmittariAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F26F5E12D056CC100AA3362 /* NopeusmittariAppDelegate.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		4F26F5E12D056CC100AA3362 /* NopeusmittariAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NopeusmittariAppDelegate.swift; sourceTree = "<group>"; };
 		4F4ED2EE2CFCC914003723BB /* nopeusmittari.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nopeusmittari.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4F26F5E02D05666900AA3362 /* Exceptions for "nopeusmittari" folder in "nopeusmittari" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4F4ED2ED2CFCC914003723BB /* nopeusmittari */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4F4ED2F02CFCC914003723BB /* nopeusmittari */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4F26F5E02D05666900AA3362 /* Exceptions for "nopeusmittari" folder in "nopeusmittari" target */,
+			);
 			path = nopeusmittari;
 			sourceTree = "<group>";
 		};
@@ -32,6 +50,7 @@
 		4F4ED2E52CFCC914003723BB = {
 			isa = PBXGroup;
 			children = (
+				4F26F5E12D056CC100AA3362 /* NopeusmittariAppDelegate.swift */,
 				4F4ED2F02CFCC914003723BB /* nopeusmittari */,
 				4F4ED2EF2CFCC914003723BB /* Products */,
 			);
@@ -119,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F26F5E22D056CC100AA3362 /* NopeusmittariAppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +275,7 @@
 				DEVELOPMENT_TEAM = L3BYPUKWJN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = nopeusmittari/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To display your speed and location, the app needs access to your location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -286,6 +307,7 @@
 				DEVELOPMENT_TEAM = L3BYPUKWJN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = nopeusmittari/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To display your speed and location, the app needs access to your location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
