@@ -27,7 +27,9 @@ struct ContentView: View {
             }
             Button(toggleButtonText) {
                 gpsModel.toggleLocationUpdating()
-            }.padding(.vertical, 20)
+            }
+            .padding(.vertical, 20)
+            .buttonStyle(.bordered)
         }
         .padding()
         Spacer()
