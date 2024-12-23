@@ -7,7 +7,7 @@ struct ContentView: View {
     var gpsModel: GpsViewModel
         
     var body: some View {
-        let toggleButtonText = "Toggle updating"
+        let toggleButtonText = gpsModel.isReceivingLocation ? "Stop updating" : "Start updating"
 
         VStack {
             if !gpsModel.locationAvailable {
