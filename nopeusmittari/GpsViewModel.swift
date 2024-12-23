@@ -16,8 +16,6 @@ fileprivate extension FloatingPoint {
 }
 
 class GpsViewModel: ObservableObject {
-    static let shared = GpsViewModel()
-    
     @Published var locationAvailable: Bool = false
     @Published var speedValue: Double = 0
     @Published var speedUnit: SpeedUnit = speedUnits["kmh"]!
@@ -30,6 +28,7 @@ class GpsViewModel: ObservableObject {
     @Published var horizontalAccuracy: Double = -1
     @Published var stationary: Bool = true
     @Published var hasAccurateLocation: Bool = false
+    @Published var isReceivingLocation: Bool = false
     
     func update(with location: CLLocation,
                 isAccuracyLimited: Bool,

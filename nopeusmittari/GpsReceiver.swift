@@ -3,7 +3,7 @@ import CoreLocation
 
 @MainActor
 protocol GpsReceiver: ObservableObject {
-    func start(_ viewModel: GpsViewModel)
+    func start(_ viewModel: GpsViewModel?)
     func stop()
 }
 
@@ -13,7 +13,10 @@ class GpsReceiverImpl: GpsReceiver {
     private var background: CLBackgroundActivitySession?
     
     private var updater: Task<Void, Never>?
-        
+    private var shouldRun: Bool = false
+    
+    private var receivers = NSHashTable<GpsViewModel>.weakObjects()
+    
     private init() {
         manager = CLLocationManager()
     }
@@ -36,12 +39,22 @@ class GpsReceiverImpl: GpsReceiver {
         }
     }
     
-    func start(_ viewModel: GpsViewModel) {
+    func start(_ receiver: GpsViewModel?) {
         NSLog("GpsModelImpl: start")
+        
+        if let receiver, !receivers.contains(receiver) {
+            receivers.add(receiver)
+        }
         
         if updater != nil {
             NSLog("GpsModelImpl: start: apparently updater is already running")
             return
+        }
+        
+        self.shouldRun = true
+        
+        updateReceivers { r in
+            r.isReceivingLocation = true
         }
         
         self.updater = Task {
@@ -51,33 +64,45 @@ class GpsReceiverImpl: GpsReceiver {
             
             do {
                 for try await update in stream {
-                    guard !Task.isCancelled else {
+                    guard shouldRun else {
                         NSLog("Task was cancelled, stopping")
+                        updateReceivers { r in
+                            r.isReceivingLocation = false
+                            r.updateWithNoLocation()
+                        }
                         self.updater = nil
                         self.updatesStarted = false
-                        viewModel.updateWithNoLocation()
                         return
                     }
                     
                     guard !update.authorizationDenied else {
                         NSLog("No location permission")
-                        viewModel.updateWithNoLocation()
+                        updateReceivers { r in
+                            r.updateWithNoLocation()
+                        }
                         continue
                     }
                     
                     if let location = update.location {
                         NSLog("Location updated, \(update.location)")
-                        viewModel.update(with: location,
-                                         isAccuracyLimited: update.accuracyLimited,
-                                         isStationary: update.stationary)
+                        updateReceivers { r in
+                            r.update(with: location,
+                                     isAccuracyLimited: update.accuracyLimited,
+                                     isStationary: update.stationary)
+                        }
                     } else {
-                        viewModel.updateWithNoLocation()
+                        updateReceivers { r in
+                            r.updateWithNoLocation()
+                        }
                     }
                 }
             } catch {
                 NSLog("Getting location updates failed: \(error)")
                 self.updatesStarted = false
                 self.updater = nil
+                updateReceivers { r in
+                    r.isReceivingLocation = false
+                }
                 return
             }
         }
@@ -86,14 +111,22 @@ class GpsReceiverImpl: GpsReceiver {
     func stop() {
         NSLog("GpsModelImpl: stop")
         
-        self.updater?.cancel()
+        self.shouldRun = false
         self.updater = nil
         self.updatesStarted = false
+        
+        updateReceivers { r in
+            r.isReceivingLocation = false
+        }
+    }
+    
+    private func updateReceivers(_ updater: @escaping (_ vm: GpsViewModel) -> Void) {
+        receivers.allObjects.forEach { r in updater(r) }
     }
 }
 
 class FixedGpsModel: GpsReceiver {
-    func start(_ viewModel: GpsViewModel) {
+    func start(_ viewModel: GpsViewModel?) {
         NSLog("FixedGpsModel: start")
         
         let location = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 60,
@@ -105,9 +138,9 @@ class FixedGpsModel: GpsReceiver {
                                   speed: 30,
                                   timestamp: Date())
         
-        viewModel.update(with: location,
-                         isAccuracyLimited: false,
-                         isStationary: false)
+        viewModel?.update(with: location,
+                          isAccuracyLimited: false,
+                          isStationary: false)
     }
     
     func stop() {
@@ -116,9 +149,9 @@ class FixedGpsModel: GpsReceiver {
 }
 
 class FixedNoLocationPermission: GpsReceiver {
-    func start(_ viewModel: GpsViewModel) {
+    func start(_ viewModel: GpsViewModel?) {
         NSLog("FixedNoLocationPermission: start")
-        viewModel.updateWithNoLocation()
+        viewModel?.updateWithNoLocation()
     }
     
     func stop() {
@@ -127,7 +160,7 @@ class FixedNoLocationPermission: GpsReceiver {
 }
 
 class FixedPoorLocationAccuracy: GpsReceiver {
-    func start(_ viewModel: GpsViewModel) {
+    func start(_ viewModel: GpsViewModel?) {
         NSLog("FixedPoorLocationAccuracy: start")
         
         let location = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 60,
@@ -139,9 +172,9 @@ class FixedPoorLocationAccuracy: GpsReceiver {
                                   speed: -1,
                                   timestamp: Date())
         
-        viewModel.update(with: location,
-                         isAccuracyLimited: true,
-                         isStationary: false)
+        viewModel?.update(with: location,
+                          isAccuracyLimited: true,
+                          isStationary: false)
         
     }
     
